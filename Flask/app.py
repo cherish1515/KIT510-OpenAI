@@ -1,5 +1,3 @@
-# This app.py is used to run the flask server to send step_description and receive the answer from OpenAI 
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import openai
@@ -8,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Set your OpenAI API key here
-openai.api_key = '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'
+openai.api_key = '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'
 
 @app.route('/process_data', methods=['POST'])
 def process_data():
@@ -27,11 +25,8 @@ def process_data():
         # Extract the generated answer from the OpenAI response
         generated_answer = response_generated.choices[0].text.strip()
 
-        # Assuming solution_description is obtained from OpenAI API
-        solution_description = "Solution description for step {}".format(step_id)
-
         # Return the generated answers and solution_description as a dictionary
-        return jsonify({'generated_answer': generated_answer, 'solution_description': solution_description, 'step_id': step_id})
+        return jsonify({'generated_answer': generated_answer, 'step_id': step_id})
 
     else:
         # Handle bulk form submission (JSON data)
@@ -41,19 +36,17 @@ def process_data():
         for step_data in data:
             step_id = step_data['step_id']
             step_description = step_data['step_description']
+            student_answer = step_data['student_answer']
 
             # Use OpenAI API to generate a response
             response_generated = openai.Completion.create(
                 engine="text-davinci-003",
-                prompt=step_description,
-                max_tokens=150  # Set the desired length of the response
+                prompt=f"Step description: {step_description}\nStudent answer: {student_answer}\n",
+                max_tokens=300  # Set the desired length of the response
             )
 
             # Extract the generated answers from the OpenAI responses
             generated_answer = response_generated.choices[0].text.strip()
-
-            # Assuming solution_description is obtained from OpenAI API
-            solution_description = "Solution description for step {}".format(step_id)
 
             responses[step_id] = generated_answer  # Store the generated answer
 
