@@ -550,10 +550,10 @@ function sendAllDescriptions() {
     var requestData = [];
     
     <?php foreach ($stepDescriptionsArray as $stepId => $stepDescription) { ?>
-        var stepDescription = document.forms['form<?php echo $stepId; ?>']['student_answer[<?php echo $stepId; ?>]'].value;
+        var StudentAnswer = document.forms['form<?php echo $stepId; ?>']['student_answer[<?php echo $stepId; ?>]'].value;
         var description = <?php echo json_encode($stepDescription); ?>;
         var stepId = <?php echo $stepId; ?>;
-        requestData.push({ step_id: stepId, step_description: description, student_answer: stepDescription });
+        requestData.push({ step_id: stepId, step_description: description, student_answer: StudentAnswer });
     <?php } ?>
 
     $.ajax({
