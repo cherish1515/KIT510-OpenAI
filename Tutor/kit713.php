@@ -283,15 +283,40 @@ if ($userRole === "Tutor") {
             } 
     
 
-            // Check the user's role and display buttons accordingly
-            if ($userRole == 'Student') {
-                // User has role 'Student', display the "Enter" button
+            // Assuming you have a database connection established ($conn)
+            // Query to fetch START_DATE from the study table based on the specific case_id
+            $getStartDateQuery = "SELECT START_DATE FROM study WHERE CASE_ID = :case_id";
+
+            // Prepare the statement
+            $stmtGetStartDate = oci_parse($conn, $getStartDateQuery);
+
+            // Bind parameters
+            oci_bind_by_name($stmtGetStartDate, ":case_id", $row['CASE_ID']); // Assuming $row['CASE_ID'] contains the specific case_id
+
+            // Execute the query
+            oci_execute($stmtGetStartDate);
+
+            // Fetch the START_DATE from the result
+            if ($startDateRow = oci_fetch_assoc($stmtGetStartDate)) {
+                $start_date = $startDateRow['START_DATE'];
+            }
+
+            // Get the current system date and time
+            $current_date = date("Y-m-d H:i:s"); // Format: 'YYYY-MM-DD HH:MM:SS'
+
+            if ($userRole == 'Student' && $current_date >= $start_date) {
+                // User has role 'Student' and current date is later than or equal to START_DATE, display the "Enter" button
                 echo "<td><a href='student_answer.php?case_id=" . $row['CASE_ID'] . "' class='buttonB' style='border: 2px solid black'>Enter</a></td>";
-            } elseif ($userRole == 'Tutor') {
-                // User has role 'Tutor', display the "Edit" button
-                echo "<td><a href='edit.php?case_id=" . $row['CASE_ID'] . "' class='buttonB' style='border: 2px solid black'>Edit</a></td>";
-            } 
+            } elseif ($userRole == 'Tutor' && $current_date >= $start_date) {
+                // User has role 'Tutor', and current date is later than or equal to START_DATE, display the "Edit" button
+                echo "<td><a href='step_description.php?case_id=" . $row['CASE_ID'] . "' class='buttonB' style='border: 2px solid black'>Edit</a></td>";
+            } else {
+                // For any other roles or cases where the current date is earlier than START_DATE
+                echo "<td><span class='disabledButton' style='border: 2px solid black'>Enter</span></td>";
+            }
             
+            
+
             echo "</tr>";
         }
     ?>
