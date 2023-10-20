@@ -307,14 +307,13 @@ if ($userRole === "Tutor") {
             if ($userRole == 'Student' && $current_date >= $start_date) {
                 // User has role 'Student' and current date is later than or equal to START_DATE, display the "Enter" button
                 echo "<td><a href='student_answer.php?case_id=" . $row['CASE_ID'] . "' class='buttonB' style='border: 2px solid black'>Enter</a></td>";
-            } elseif ($userRole == 'Tutor' && $current_date >= $start_date) {
-                // User has role 'Tutor', and current date is later than or equal to START_DATE, display the "Edit" button
+            } elseif ($userRole == 'Tutor') {
+                // User has role 'Tutor', display the "Edit" button regardless of the current date
                 echo "<td><a href='step_description.php?case_id=" . $row['CASE_ID'] . "' class='buttonB' style='border: 2px solid black'>Edit</a></td>";
-            } else {
-                // For any other roles or cases where the current date is earlier than START_DATE
+            } elseif ($userRole == 'Student') {
+                // For students when the current date is earlier than START_DATE, disable the "Enter" button
                 echo "<td><span class='disabledButton' style='border: 2px solid black'>Enter</span></td>";
-            }
-            
+            }            
             
 
             echo "</tr>";
